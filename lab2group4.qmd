@@ -1,9 +1,9 @@
 ---
 title: "Lab2group4"
-author: "Yiyan Yang"
+author: "Yiyan Yang, Zihui Chen, Vaishnavi Sathiyamoorthy"
 format: html
 editor: visual
 ---
 
-```{}
+```         
 ```
