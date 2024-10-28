@@ -5,7 +5,7 @@ library(tidyverse)
 library(here)
 
 # read in csv file
-df <- read_csv(here("group4/R/DRG_data.csv"))
+df <- read_csv(here("R/DRG_data.csv"))
 
 # make substring of the DRG codes
 df <- df %>% mutate(DRG = substr(`DRG Definition`, 1, 3))
