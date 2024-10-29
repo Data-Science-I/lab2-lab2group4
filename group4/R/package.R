@@ -64,19 +64,14 @@ boxplot_DRG <- function(col_name) {
 #' @export
 
 # Function to calculate statistics for average Medicare payments across DRG codes
-calc_stats_by_DRG <- function(df, statistic = "mean") {
-  # Check statistic input
-  if (!statistic %in% c("mean", "median", "sd")) {
-    stop("Invalid statistic. Choose 'mean', 'median', or 'sd'.")
-  }
-
-  # Calculate the desired statistic for Average Medicare Payments
-  result <- switch(statistic,
-                   mean = mean(df$Average_Medicare_Payments, na.rm = TRUE),
-                   median = median(df$Average_Medicare_Payments, na.rm = TRUE),
-                   sd = sd(df$Average_Medicare_Payments, na.rm = TRUE))
-
-  # Return result
+calc_stats_by_DRG <-function (data, stat_type = c("mean", "median", "sd")) {
+  library(dplyr)
+  result <- df %>%
+    group_by(`DRG Definition`) %>%
+    summarise(AverageMedicarePayments = .df[["Average Medicare Payments"]]) %>%
+    summarise(stat = switch(stat_type, mean = mean(AverageMedicarePayments, na.rm = TRUE),
+                            median = median(AverageMedicarePayments, na.rm = TRUE),
+                            sd = sd(AverageMedicarePayments, na.rm = TRUE)))
   return(result)
 }
 
