@@ -4,7 +4,7 @@
 \alias{boxplot_DRG}
 \title{Title: Create a Boxplot by DRG}
 \usage{
-boxplot_DRG(col_name)
+boxplot_DRG(data, col_name)
 }
 \arguments{
 \item{col_name}{A string.Takes in "covered_charges" for Average Covered Charges. Takes in "total_payments" for Average Total Payments. Takes in "medicare_payments" for Average Medicare Payments}
