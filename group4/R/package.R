@@ -59,17 +59,16 @@ calc_stats_drg <- function(data, stat_type) {
   }
 
   # Select statistic function
-  stat_value <- switch(stat_type,
-                       "mean" = mean,
-                       "median" = median,
-                       "sd" = sd)
+  stat_function <- switch(stat_type,
+                          "mean" = mean,
+                          "median" = median,
+                          "sd" = sd)
 
   # Calculate the chosen statistic for each DRG code
   result <- data %>%
     group_by(`DRG Definition`) %>%  # Group by the 'DRG Definition' column
-    summarize(statistic = stat_value(`Average Medicare Payments`, na.rm = TRUE)) %>%
+    summarize(statistic = stat_function(`Average Medicare Payments`, na.rm = TRUE)) %>%
     rename_with(~ paste(stat_type, "payment", sep = "_"), statistic)
 
   return(result)
 }
-

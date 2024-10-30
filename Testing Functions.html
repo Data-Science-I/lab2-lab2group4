@@ -154,27 +154,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         stop("Invalid column name. Use 'covered_charges', 'total_payments', or 'medicare_payments'.")
     }
 }
-&lt;bytecode: 0x7fa76f328b70&gt;
+&lt;bytecode: 0x7fb64bfe2e68&gt;
 &lt;environment: namespace:group4&gt;</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>?boxplot_DRG</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>calc_stats_by_DRG</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>calc_stats_drg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>function (data, stat_type = c("mean", "median", "sd")) 
+<pre><code>function (data, stat_type) 
 {
-    library(dplyr)
-    result &lt;- df %&gt;% group_by(`DRG Definition`) %&gt;% summarise(AverageMedicarePayments = .df[["Average Medicare Payments"]]) %&gt;% 
-        summarise(stat = switch(stat_type, mean = mean(AverageMedicarePayments, 
-            na.rm = TRUE), median = median(AverageMedicarePayments, 
-            na.rm = TRUE), sd = sd(AverageMedicarePayments, na.rm = TRUE)))
+    data$`Average Medicare Payments` &lt;- as.numeric(gsub("[^0-9.]", 
+        "", data$`Average Medicare Payments`))
+    if (!stat_type %in% c("mean", "median", "sd")) {
+        stop("Invalid statistic type. Choose either 'mean', 'median', or 'sd'.")
+    }
+    stat_value &lt;- switch(stat_type, mean = mean, median = median, 
+        sd = sd)
+    result &lt;- data %&gt;% group_by(`DRG Definition`) %&gt;% summarize(statistic = stat_value(`Average Medicare Payments`, 
+        na.rm = TRUE)) %&gt;% rename_with(~paste(stat_type, "payment", 
+        sep = "_"), statistic)
     return(result)
 }
-&lt;bytecode: 0x7fa7707a5ae8&gt;
+&lt;bytecode: 0x7fb65097f3f8&gt;
 &lt;environment: namespace:group4&gt;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>?calc_stats_by_DRG</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>?calc_stats_drg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in csv file</span></span>
@@ -216,6 +221,74 @@ dbl (6): Provider Id, Provider Zip Code, Total Discharges, Average Covered C...
 <p><img src="Testing-Functions_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>DRG <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"DRG_data.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 163065 Columns: 12
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (6): DRG Definition, Provider Name, Provider Street Address, Provider Ci...
+dbl (6): Provider Id, Provider Zip Code, Total Discharges, Average Covered C...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mean_medicare_payments <span class="ot">&lt;-</span> <span class="fu">calc_stats_drg</span>(DRG, <span class="st">"mean"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>median_medicare_payments <span class="ot">&lt;-</span> <span class="fu">calc_stats_drg</span>(DRG, <span class="st">"median"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>sd_medicare_payments <span class="ot">&lt;-</span> <span class="fu">calc_stats_drg</span>(DRG, <span class="st">"sd"</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>mean_medicare_payments</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 100 × 2
+   `DRG Definition`                                                mean_payment
+   &lt;chr&gt;                                                                  &lt;dbl&gt;
+ 1 039 - EXTRACRANIAL PROCEDURES W/O CC/MCC                               5556.
+ 2 057 - DEGENERATIVE NERVOUS SYSTEM DISORDERS W/O MCC                    5702.
+ 3 064 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W MCC            12113.
+ 4 065 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W CC              6782.
+ 5 066 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W/O CC/MCC        4469.
+ 6 069 - TRANSIENT ISCHEMIA                                               3952.
+ 7 074 - CRANIAL &amp; PERIPHERAL NERVE DISORDERS W/O MCC                     5239.
+ 8 101 - SEIZURES W/O MCC                                                 4453.
+ 9 149 - DYSEQUILIBRIUM                                                   3441.
+10 176 - PULMONARY EMBOLISM W/O MCC                                       6078.
+# ℹ 90 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>median_medicare_payments</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 100 × 2
+   `DRG Definition`                                               median_payment
+   &lt;chr&gt;                                                                   &lt;dbl&gt;
+ 1 039 - EXTRACRANIAL PROCEDURES W/O CC/MCC                                5269.
+ 2 057 - DEGENERATIVE NERVOUS SYSTEM DISORDERS W/O MCC                     5105.
+ 3 064 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W MCC             10956.
+ 4 065 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W CC               6168.
+ 5 066 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W/O CC/M…          4080.
+ 6 069 - TRANSIENT ISCHEMIA                                                3627.
+ 7 074 - CRANIAL &amp; PERIPHERAL NERVE DISORDERS W/O MCC                      4816.
+ 8 101 - SEIZURES W/O MCC                                                  4013.
+ 9 149 - DYSEQUILIBRIUM                                                    3146.
+10 176 - PULMONARY EMBOLISM W/O MCC                                        5645.
+# ℹ 90 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sd_medicare_payments</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 100 × 2
+   `DRG Definition`                                                sd_payment
+   &lt;chr&gt;                                                                &lt;dbl&gt;
+ 1 039 - EXTRACRANIAL PROCEDURES W/O CC/MCC                             1236.
+ 2 057 - DEGENERATIVE NERVOUS SYSTEM DISORDERS W/O MCC                  1974.
+ 3 064 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W MCC           3702.
+ 4 065 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W CC            1979.
+ 5 066 - INTRACRANIAL HEMORRHAGE OR CEREBRAL INFARCTION W/O CC/MCC      1272.
+ 6 069 - TRANSIENT ISCHEMIA                                             1095.
+ 7 074 - CRANIAL &amp; PERIPHERAL NERVE DISORDERS W/O MCC                   1542.
+ 8 101 - SEIZURES W/O MCC                                               1379.
+ 9 149 - DYSEQUILIBRIUM                                                 1076.
+10 176 - PULMONARY EMBOLISM W/O MCC                                     1505.
+# ℹ 90 more rows</code></pre>
 </div>
 </div>
 

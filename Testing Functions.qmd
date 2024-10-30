@@ -19,8 +19,8 @@ boxplot_DRG
 ```
 
 ```{r}
-calc_stats_by_DRG
-?calc_stats_by_DRG
+calc_stats_drg
+?calc_stats_drg
 ```
 
 ```{r}
@@ -36,6 +36,18 @@ DRG <-DRG %>% mutate(DRG = substr(`DRG Definition`, 1, 3))
 boxplot_DRG(DRG,"covered_charges")
 boxplot_DRG(DRG,"total_payments")
 boxplot_DRG(DRG,"medicare_payments")
+```
+
+```{r}
+DRG <- read_csv(here("DRG_data.csv"))
+
+mean_medicare_payments <- calc_stats_drg(DRG, "mean")
+median_medicare_payments <- calc_stats_drg(DRG, "median")
+sd_medicare_payments <- calc_stats_drg(DRG, "sd")
+
+mean_medicare_payments
+median_medicare_payments
+sd_medicare_payments
 ```
 
 
