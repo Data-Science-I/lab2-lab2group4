@@ -6,11 +6,12 @@ editor: visual
 ---
 
 ```{r}
-library(group4)
 library(devtools)
 library(roxygen2)
 library(tidyverse)
 library(here)
+install('group4')
+library(group4)
 ```
 
 ```{r}
