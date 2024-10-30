@@ -24,6 +24,7 @@ boxplot_DRG
 ```{r}
 calc_stats_drg
 ?calc_stats_drg
+data("data") 
 ```
 
 ```{r}
