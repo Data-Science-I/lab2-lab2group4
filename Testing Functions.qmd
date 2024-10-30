@@ -10,8 +10,10 @@ library(devtools)
 library(roxygen2)
 library(tidyverse)
 library(here)
-install('group4')
+
+devtools::install_github("Data-Science-I/lab2-lab2group4/group4")
 library(group4)
+
 ```
 
 ```{r}
@@ -25,13 +27,16 @@ calc_stats_drg
 ```
 
 ```{r}
+DRG <- group4::data  
+```
+
+```{r}
 # read in csv file
-DRG <- read_csv(here("DRG_data.csv"))
+#DRG <- read_csv(here("DRG_data.csv"))
 
 # make substring of the DRG codes
 DRG <-DRG %>% mutate(DRG = substr(`DRG Definition`, 1, 3))
 ```
-
 
 ```{r}
 boxplot_DRG(DRG,"covered_charges")
@@ -40,7 +45,7 @@ boxplot_DRG(DRG,"medicare_payments")
 ```
 
 ```{r}
-DRG <- read_csv(here("DRG_data.csv"))
+DRG <- group4::data
 
 mean_medicare_payments <- calc_stats_drg(DRG, "mean")
 median_medicare_payments <- calc_stats_drg(DRG, "median")
@@ -50,6 +55,3 @@ mean_medicare_payments
 median_medicare_payments
 sd_medicare_payments
 ```
-
-
-
